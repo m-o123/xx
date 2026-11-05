@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>i-FiX Controller Test</title>
+<style>
+:root {
+  --orange: #ffad42;
+  --blue: #168cff;
+  --bg: #101216;
+  --panel: #1b2028;
+  --muted: #9ba5b4;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #252b36, var(--bg) 65%);
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 24px 14px 50px;
+}
+header { text-align: center; margin: 15px auto 30px; }
+.logo {
+  color: var(--orange);
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  text-shadow: 0 0 20px #ffad4266;
+}
+.subtitle { color: var(--muted); letter-spacing: 2px; font-size: 12px; }
+.container { max-width: 950px; margin: auto; }
+.panel {
+  background: #1b2028dd;
+  border: 1px solid #ffffff18;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 10px 35px #0005;
+}
+h2 { color: var(--orange); font-size: 17px; margin-top: 0; }
+.status {
+  display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px; align-items: center;
+}
+button {
+  background: linear-gradient(135deg, #168cff, #0754aa);
+  color: white; border: 0; border-radius: 9px;
+  padding: 12px 18px; font-weight: bold; cursor: pointer;
+}
+button:hover { filter: brightness(1.2); }
+button.secondary { background: #343b47; }
+#connection { color: #ff7777; font-weight: bold; }
+#device { color: var(--muted); overflow-wrap: anywhere; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(55px, 1fr));
+  gap: 10px;
+}
+.key {
+  background: #303743; border: 1px solid #4b5665;
+  border-radius: 10px; padding: 14px 5px;
+  text-align: center; color: #cbd3df;
+  font-weight: bold; transition: .08s;
+}
+.key.active {
+  background: var(--blue); color: white;
+  border-color: #8bcaff;
+  box-shadow: 0 0 18px #168cff88;
+}
+.axes {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+}
+.axis {
+  background: #11151b; padding: 15px; border-radius: 12px;
+}
+.axis-name { color: var(--orange); font-weight: bold; }
+.track {
+  height: 9px; background: #343b47; border-radius: 10px;
+  margin: 15px 0 8px; overflow: hidden;
+}
+.fill { height: 100%; width: 50%; background: var(--blue); }
+.value { color: var(--muted); font-size: 12px; }
+.readings {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+}
+.reading {
+  background: #11151b; padding: 14px; border-radius: 10px;
+}
+.reading strong { color: var(--orange); display: block; margin-bottom: 6px; }
+input[type=range] { width: 100%; accent-color: var(--orange); }
+small { color: var(--muted); }
+footer { text-align: center; color: #687382; font-size: 12px; margin-top: 25px; }
+@media(max-width:550px) {
+  .axes { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">i-FiX</div>
+  <div class="subtitle">CONTROLLER TEST CENTER</div>
+</header>
+
+<main class="container">
+  <section class="panel">
+    <div class="status">
+      <div>
+        <h2>CONTROLLER STATUS</h2>
+        <div id="connection">● DISCONNECTED</div>
+        <p id="device">Connect a controller to begin testing.</p>
+      </div>
+      <button id="connect">CONNECT DEVICE</button>
+    </div>
+    <p><small>Gamepad API works with supported controllers. WebHID support depends on browser and device.</small></p>
+  </section>
+
+  <section class="panel">
+    <h2>BUTTON TEST</h2>
+    <div class="grid" id="buttons"></div>
+  </section>
+
+  <section class="panel">
+    <h2>ANALOG STICKS</h2>
+    <div class="axes">
+      <div class="axis">
+        <div class="axis-name">LEFT STICK</div>
+        <div class="track"><div class="fill" id="a0"></div></div>
+        <div class="value" id="v0">X: 0.00</div>
+        <div class="track"><div class="fill" id="a1"></div></div>
+        <div class="value" id="v1">Y: 0.00</div>
+      </div>
+      <div class="axis">
+        <div class="axis-name">RIGHT STICK</div>
+        <div class="track"><div class="fill" id="a2"></div></div>
+        <div class="value" id="v2">X: 0.00</div>
+        <div class="track"><div class="fill" id="a3"></div></div>
+        <div class="value" id="v3">Y: 0.00</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>TRIGGERS & DEADZONE</h2>
+    <div class="readings">
+      <div class="reading"><strong>L2 / LT</strong><span id="l2">0.00</span></div>
+      <div class="reading"><strong>R2 / RT</strong><span id="r2">0.00</span></div>
+    </div>
+    <p>Software Deadzone: <strong id="deadValue">0.05</strong></p>
+    <input type="range" id="deadzone" min="0" max="0.5" step="0.01" value="0.05">
+    <small>This changes the displayed readings only. It does not calibrate or modify controller firmware.</small>
+  </section>
+
+  <section class="panel">
+    <h2>DEVICE INFORMATION</h2>
+    <div class="readings">
+      <div class="reading"><strong>INDEX</strong><span id="index">-</span></div>
+      <div class="reading"><strong>BUTTONS</strong><span id="buttonCount">-</span></div>
+      <div class="reading"><strong>AXES</strong><span id="axisCount">-</span></div>
+      <div class="reading"><strong>VIBRATION</strong><span id="vibration">Not detected</span></div>
+    </div>
+    <br>
+    <button class="secondary" id="vibrate">VIBRATION TEST</button>
+  </section>
+</main>
+
+<footer>i-FiX Controller Test · Local browser testing</footer>
+
+<script>
+const buttonNames = [
+  "✕ / A", "○ / B", "□ / X", "△ / Y",
+  "L1 / LB", "R1 / RB", "L2 / LT", "R2 / RT",
+  "SHARE", "OPTIONS", "L3", "R3",
+  "D-PAD UP", "D-PAD DOWN", "D-PAD LEFT", "D-PAD RIGHT",
+  "PS / HOME", "TOUCHPAD"
+];
+
+const buttonBox = document.getElementById("buttons");
+buttonNames.forEach((name, i) => {
+  const el = document.createElement("div");
+  el.className = "key";
+  el.id = "b" + i;
+  el.textContent = name;
+  buttonBox.appendChild(el);
+});
+
+let activeIndex = null;
+let currentGamepad = null;
+
+function applyDeadzone(value) {
+  const dz = Number(document.getElementById("deadzone").value);
+  return Math.abs(value) < dz ? 0 : value;
+}
+
+document.getElementById("deadzone").addEventListener("input", e => {
+  document.getElementById("deadValue").textContent =
+    Number(e.target.value).toFixed(2);
+});
+
+function setAxis(i, value) {
+  const adjusted = applyDeadzone(value);
+  const percent = Math.max(0, Math.min(100, (adjusted + 1) * 50));
+  document.getElementById("a" + i).style.width = percent + "%";
+  document.getElementById("v" + i).textContent =
+    ["X: ", "Y: ", "X: ", "Y: "][i] + adjusted.toFixed(2);
+}
+
+function update() {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  let pad = activeIndex !== null ? pads[activeIndex] : null;
+  if (!pad) pad = Array.from(pads).find(p => p && p.connected);
+
+  if (pad) {
+    currentGamepad = pad;
+    activeIndex = pad.index;
+    document.getElementById("connection").textContent = "● CONNECTED";
+    document.getElementById("connection").style.color = "#56e39b";
+    document.getElementById("device").textContent = pad.id;
+    document.getElementById("index").textContent = pad.index;
+    document.getElementById("buttonCount").textContent = pad.buttons.length;
+    document.getElementById("axisCount").textContent = pad.axes.length;
+
+    buttonNames.forEach((_, i) => {
+      const pressed = pad.buttons[i] && pad.buttons[i].pressed;
+      document.getElementById("b" + i).classList.toggle("active", !!pressed);
+    });
+
+    for (let i = 0; i < 4; i++) {
+      setAxis(i, pad.axes[i] ?? 0);
+    }
+
+    document.getElementById("l2").textContent =
+      (pad.buttons[6]?.value ?? 0).toFixed(2);
+    document.getElementById("r2").textContent =
+      (pad.buttons[7]?.value ?? 0).toFixed(2);
+
+    const vib = pad.vibrationActuator;
+    document.getElementById("vibration").textContent =
+      vib ? "Supported" : "Not detected";
+  } else {
+    currentGamepad = null;
+    document.getElementById("connection").textContent = "● DISCONNECTED";
+    document.getElementById("connection").style.color = "#ff7777";
+    document.getElementById("device").textContent = "Press a button on your controller.";
+    document.getElementById("index").textContent = "-";
+    document.getElementById("buttonCount").textContent = "-";
+    document.getElementById("axisCount").textContent = "-";
+    document.getElementById("vibration").textContent = "Not detected";
+    buttonNames.forEach((_, i) =>
+      document.getElementById("b" + i).classList.remove("active")
+    );
+    for (let i = 0; i < 4; i++) setAxis(i, 0);
+    document.getElementById("l2").textContent = "0.00";
+    document.getElementById("r2").textContent = "0.00";
+  }
+  requestAnimationFrame(update);
+}
+
+window.addEventListener("gamepadconnected", e => {
+  activeIndex = e.gamepad.index;
+});
+window.addEventListener("gamepaddisconnected", e => {
+  if (activeIndex === e.gamepad.index) activeIndex = null;
+});
+
+document.getElementById("connect").addEventListener("click", () => {
+  if (!navigator.getGamepads) {
+    alert("Your browser does not support Gamepad API.");
+    return;
+  }
+  alert("Press any button on your connected controller.");
+});
+
+document.getElementById("vibrate").addEventListener("click", async () => {
+  const actuator = currentGamepad?.vibrationActuator;
+  if (!actuator) {
+    alert("Vibration is not supported by this browser or controller.");
+    return;
+  }
+  try {
+    await actuator.playEffect("dual-rumble", {
+      duration: 500,
+      strongMagnitude: 1,
+      weakMagnitude: 1
+    });
+  } catch {
+    alert("Vibration test is not available on this device.");
+  }
+});
+
+requestAnimationFrame(update);
+</script>
+</body>
+</html>
