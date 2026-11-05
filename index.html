@@ -3,334 +3,321 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>i-FiX | Hybrid Controller Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>i-FiX Controller Tester</title>
 <style>
-:root {
-  --gold:#e9a94c;
-  --orange:#ff7838;
-  --blue:#168cff;
-  --bg:#0b0d11;
-  --panel:#171b22;
-  --muted:#9099a8;
+:root{
+ --bg:#0d1015;--panel:#171c24;--panel2:#202631;
+ --line:#303946;--gold:#e9ad55;--blue:#299cff;
+ --text:#edf1f7;--muted:#929eae;--green:#50d69a;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;background:
-  radial-gradient(ellipse at 50% 15%,#34302a 0%,transparent 42%),
-  radial-gradient(ellipse at 10% 80%,#12243a 0%,transparent 40%),
-  #0b0d11;
-  color:#fff;font-family:Arial,sans-serif;
-  min-height:100vh;padding:20px;
-}
-header{text-align:center;padding:15px 0 25px}
-.logo{
-  font-size:45px;font-weight:900;letter-spacing:8px;
-  color:var(--gold);text-shadow:0 0 22px #e9a94c88;
-}
-.tag{font-size:11px;letter-spacing:4px;color:#aeb4bf}
-.container{max-width:1100px;margin:auto}
-.status{
-  display:flex;justify-content:space-between;align-items:center;
-  flex-wrap:wrap;gap:12px;margin-bottom:18px;
-}
-.panel{
-  background:linear-gradient(145deg,#20252eeb,#11151bee);
-  border:1px solid #ffffff18;border-radius:16px;
-  padding:18px;box-shadow:0 12px 35px #0007;
-}
-h2{font-size:14px;color:var(--gold);letter-spacing:2px;margin:0 0 15px}
-button{
-  background:linear-gradient(120deg,#b9782e,#f2bc65);
-  border:0;color:#17110a;padding:12px 19px;
-  border-radius:8px;font-weight:bold;cursor:pointer;
-}
-button.secondary{background:#303846;color:#fff}
-#connection{color:#ff7777;font-weight:bold}
-.controller-stage{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:18px;margin-bottom:18px;
-}
+body{margin:0;background:var(--bg);color:var(--text);
+ font:14px Arial,sans-serif}
+header{height:65px;border-bottom:1px solid var(--line);
+ display:flex;align-items:center;justify-content:space-between;
+ padding:0 max(20px,calc((100% - 1180px)/2))}
+.brand{font-size:27px;font-weight:900;letter-spacing:4px;color:var(--gold)}
+nav{display:flex;gap:20px;flex-wrap:wrap}
+nav a{color:var(--muted);text-decoration:none;font-size:12px}
+nav a:hover{color:var(--gold)}
+main{max-width:1180px;margin:25px auto;padding:0 18px}
+h2{font-size:15px;margin:0 0 17px}
+h2 span{color:var(--gold)}
+.sub{font-size:11px;color:var(--muted);margin-top:5px}
+.card{background:var(--panel);border:1px solid var(--line);
+ border-radius:11px;padding:19px;margin-bottom:17px}
+.top{display:flex;justify-content:space-between;align-items:center;
+ gap:15px;flex-wrap:wrap}
+button{background:var(--gold);color:#17130c;border:0;
+ padding:10px 16px;border-radius:7px;font-weight:bold;cursor:pointer}
+button.dark{background:#303a48;color:white}
+button:hover{filter:brightness(1.12)}
+#status{color:var(--gold);font-weight:bold}
+.visual-grid{display:grid;grid-template-columns:1.35fr .8fr;gap:17px}
+.controller-area{min-height:315px;display:flex;align-items:center;
+ justify-content:center;position:relative;overflow:hidden;
+ background:radial-gradient(ellipse,#28313d 0%,#171c24 65%)}
 .controller{
-  position:relative;min-height:255px;
-  background:linear-gradient(145deg,#272d37,#11151b);
-  border:1px solid #ffffff20;border-radius:18px;
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;overflow:hidden;padding:20px;
+ position:relative;width:340px;height:175px;
+ background:linear-gradient(145deg,#e0e2e5,#777f8b);
+ border-radius:75px 75px 60px 60px;
+ box-shadow:inset 0 5px 12px #fff8,0 20px 30px #0008;
+ transform:scale(.88);
 }
-.controller:before{
-  content:"";position:absolute;width:180px;height:180px;
-  border-radius:50%;background:#e9a94c10;filter:blur(30px);
+.controller:before,.controller:after{
+ content:"";position:absolute;top:95px;width:105px;height:115px;
+ background:inherit;border-radius:20px 20px 65px 65px;z-index:0
 }
-.controller.ps5:before{background:#168cff20}
-.pad{
-  width:190px;height:112px;position:relative;
-  border-radius:45px 45px 34px 34px;
-  background:linear-gradient(145deg,#737983,#252a32);
-  transform:rotate(0deg);
-  box-shadow:inset 0 5px 12px #ffffff33,0 15px 24px #0009;
-}
-.ps5 .pad{
-  width:205px;height:122px;border-radius:55px 55px 35px 35px;
-  background:linear-gradient(145deg,#e2e5e9,#515967);
-}
-.grip{
-  position:absolute;width:65px;height:90px;
-  background:inherit;bottom:-42px;border-radius:20px 20px 35px 35px;
-}
-.grip.left{left:12px;transform:rotate(17deg)}
-.grip.right{right:12px;transform:rotate(-17deg)}
-.stick{
-  position:absolute;width:27px;height:27px;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#555,#08090b);
-  border:3px solid #8a909a;z-index:2;
-}
-.s1{left:45px;top:48px}
-.s2{right:45px;top:48px}
-.ps5 .s1{left:45px;top:56px}
-.ps5 .s2{right:45px;top:56px}
-.dpad{
-  position:absolute;left:15px;top:30px;color:#17191e;
-  font-size:30px;font-weight:bold;z-index:2;
-}
-.symbols{
-  position:absolute;right:15px;top:28px;
-  color:#dce3ef;font-size:16px;line-height:23px;
-  text-align:center;z-index:2;
-}
-.ps5 .symbols{color:#168cff}
-.touch{
-  position:absolute;left:50%;top:7px;transform:translateX(-50%);
-  width:52px;height:19px;border-radius:5px;
-  background:#181c23;border:1px solid #aaa;
-}
-.ps5 .touch{width:65px;height:28px;background:#b9c0cb}
-.model{margin-top:48px;color:var(--gold);font-size:12px;letter-spacing:2px}
-.ps5 .model{color:#6db9ff}
-.data-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:12px;margin-bottom:18px;
-}
-.metric{
-  background:#10141b;border:1px solid #ffffff12;
-  padding:15px;border-radius:12px;
-}
-.metric b{display:block;color:var(--gold);font-size:12px;margin-bottom:8px}
-.metric span{font-size:18px;font-weight:bold}
-.buttons{
-  display:grid;grid-template-columns:repeat(6,1fr);gap:9px;
-}
-.key{
-  text-align:center;background:#252c37;border:1px solid #ffffff19;
-  border-radius:9px;padding:13px 4px;color:#c6ccd5;font-size:12px;
-}
-.key.active{
-  background:#0879d8;color:white;border-color:#72c2ff;
-  box-shadow:0 0 18px #168cff99;
-}
-.axes{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
-}
-.axis{
-  aspect-ratio:1;background:#10141b;border:1px solid #ffffff18;
-  border-radius:50%;position:relative;max-width:150px;width:100%;
-  margin:auto;
-}
-.axis:before,.axis:after{
-  content:"";position:absolute;background:#ffffff18;
-}
-.axis:before{width:1px;height:100%;left:50%}
-.axis:after{height:1px;width:100%;top:50%}
-.dot{
-  position:absolute;width:18px;height:18px;border-radius:50%;
-  background:var(--blue);box-shadow:0 0 15px #168cff;
-  left:calc(50% - 9px);top:calc(50% - 9px);
-}
-.axis-label{text-align:center;color:var(--muted);font-size:11px;margin-top:8px}
-.track{height:8px;background:#303743;border-radius:10px;overflow:hidden;margin:12px 0}
-.fill{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--gold))}
+.controller:before{left:12px;transform:rotate(13deg)}
+.controller:after{right:12px;transform:rotate(-13deg)}
+.touchpad{position:absolute;z-index:2;left:50%;top:12px;
+ transform:translateX(-50%);width:100px;height:42px;
+ background:#252b35;border:2px solid #aab1bb;border-radius:7px}
+.stick{position:absolute;z-index:3;width:39px;height:39px;
+ border-radius:50%;background:radial-gradient(circle at 35% 30%,#69717d,#12161d);
+ border:3px solid #aeb4bd;top:85px}
+.stick.left{left:78px}.stick.right{right:78px}
+.dpad{position:absolute;z-index:3;left:20px;top:45px;
+ color:#222831;font-size:39px}
+.face{position:absolute;z-index:3;right:18px;top:42px;
+ display:grid;grid-template-columns:25px 25px;gap:5px;text-align:center;
+ font-weight:bold;color:#267cc8}
+.face b{border:2px solid #aeb8c4;border-radius:50%;padding:3px}
+.controller-label{position:absolute;bottom:17px;color:var(--gold);
+ font-size:10px;letter-spacing:2px}
+.pressed{background:#222b37}
+.readout{background:#10151c;border:1px solid var(--line);
+ border-radius:8px;padding:15px;margin-bottom:10px}
+.readout strong{display:block;color:var(--gold);margin-bottom:8px}
+.big{font-size:23px;font-weight:bold}
+#pressedName{color:var(--green);font-size:18px}
+.stickrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stickbox{background:#11161e;border:1px solid var(--line);
+ border-radius:9px;padding:14px}
+.stick-title{font-weight:bold;color:var(--gold);margin-bottom:12px}
+.scope{width:130px;height:130px;max-width:100%;aspect-ratio:1;
+ border:1px solid #526071;border-radius:50%;margin:12px auto;
+ position:relative;background:
+ linear-gradient(90deg,transparent 49.5%,#384451 50%,transparent 50.5%),
+ linear-gradient(transparent 49.5%,#384451 50%,transparent 50.5%),
+ radial-gradient(circle,transparent 24%,#384451 25%,transparent 26%,
+ transparent 49%,#384451 50%,transparent 51%)}
+.point{position:absolute;width:12px;height:12px;background:var(--blue);
+ box-shadow:0 0 12px var(--blue);border-radius:50%;
+ left:calc(50% - 6px);top:calc(50% - 6px)}
+.values{display:flex;justify-content:space-between;color:var(--muted);
+ font-size:12px}
+.bar{height:8px;background:#303946;border-radius:8px;overflow:hidden;margin-top:9px}
+.bar i{display:block;height:100%;width:0;background:var(--blue)}
+.rawgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.rawlist{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.rawitem{background:#10151c;border:1px solid #28313c;
+ padding:9px;border-radius:6px;text-align:center;font-size:11px}
+.rawitem b{display:block;color:var(--gold);margin-bottom:5px}
+.rawitem.active{background:#075b9e;border-color:#4cb5ff}
+.triggergrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.trigger{background:#11161e;padding:15px;border-radius:8px}
+.trigger strong{color:var(--gold)}
+.modes{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 small{color:var(--muted)}
-footer{text-align:center;color:#6e7784;font-size:11px;padding:25px}
-@media(max-width:650px){
- body{padding:12px}
- .controller-stage{grid-template-columns:1fr}
- .data-grid{grid-template-columns:repeat(2,1fr)}
- .buttons{grid-template-columns:repeat(3,1fr)}
- .axes{grid-template-columns:repeat(2,1fr)}
- .logo{font-size:36px}
+footer{text-align:center;padding:25px;color:#707c8b;font-size:11px}
+@media(max-width:750px){
+ header{height:auto;padding:17px;align-items:flex-start;gap:15px;flex-direction:column}
+ nav{gap:13px}
+ .visual-grid{grid-template-columns:1fr}
+ .rawgrid{grid-template-columns:1fr}
+ .controller{transform:scale(.72)}
+ .stickrow{grid-template-columns:1fr 1fr}
+}
+@media(max-width:430px){
+ .stickrow{grid-template-columns:1fr}
+ .rawlist{grid-template-columns:repeat(3,1fr)}
 }
 </style>
 </head>
 <body>
 <header>
- <div class="logo">i-FiX</div>
- <div class="tag">HYBRID CONTROLLER LAB</div>
+ <div class="brand">i-FiX</div>
+ <nav>
+  <a href="#tester">HOME</a>
+  <a href="#drift">DRIFT TEST</a>
+  <a href="#raw">RAW DATA</a>
+  <a href="#vibration">VIBRATION</a>
+ </nav>
 </header>
 
-<main class="container">
- <section class="panel status">
-  <div>
-   <h2>DEVICE CONNECTION</h2>
-   <div id="connection">● WAITING FOR CONTROLLER</div>
-   <small id="device">Connect your controller and press any button</small>
-  </div>
-  <button id="connect">START TEST</button>
- </section>
+<main>
+<section class="card top">
+ <div>
+  <h2>CONTROLLER <span>TESTER</span></h2>
+  <div id="status">● WAITING FOR CONTROLLER</div>
+  <div class="sub" id="device">Press any button on your controller to connect</div>
+ </div>
+ <button id="connect">CONNECT CONTROLLER</button>
+</section>
 
- <section class="controller-stage">
-  <div class="controller">
-   <div class="pad">
-    <div class="grip left"></div><div class="grip right"></div>
-    <div class="touch"></div>
-    <div class="stick s1"></div><div class="stick s2"></div>
+<section class="visual-grid" id="tester">
+ <div class="card">
+  <h2>CONTROLLER <span>VISUALIZER</span></h2>
+  <div class="controller-area">
+   <div class="controller">
+    <div class="touchpad"></div>
+    <div class="stick left"></div><div class="stick right"></div>
     <div class="dpad">✣</div>
-    <div class="symbols">△<br>○<br>×</div>
+    <div class="face"><b>△</b><b>○</b><b>□</b><b>×</b></div>
    </div>
-   <div class="model">DUALSHOCK 4 STYLE</div>
+   <div class="controller-label">i-FiX • DUALSHOCK / DUALSENSE STYLE</div>
   </div>
-  <div class="controller ps5">
-   <div class="pad">
-    <div class="grip left"></div><div class="grip right"></div>
-    <div class="touch"></div>
-    <div class="stick s1"></div><div class="stick s2"></div>
-    <div class="dpad">✣</div>
-    <div class="symbols">△<br>○<br>×</div>
-   </div>
-   <div class="model">DUALSENSE STYLE</div>
+ </div>
+ <div class="card">
+  <h2>BUTTON <span>PRESSED</span></h2>
+  <div class="readout">
+   <strong>LIVE INPUT</strong>
+   <div id="pressedName">Waiting for Input</div>
   </div>
- </section>
+  <div class="readout"><strong>DEVICE INDEX</strong><div class="big" id="index">--</div></div>
+  <div class="readout"><strong>CONNECTION</strong><div id="connected">Not Connected</div></div>
+  <small>Press buttons to view live input readings.</small>
+ </div>
+</section>
 
- <section class="data-grid">
-  <div class="metric"><b>DEVICE INDEX</b><span id="index">--</span></div>
-  <div class="metric"><b>BUTTONS</b><span id="buttonCount">--</span></div>
-  <div class="metric"><b>AXES</b><span id="axisCount">--</span></div>
-  <div class="metric"><b>VIBRATION</b><span id="vibration">--</span></div>
- </section>
-
- <section class="panel">
-  <h2>LIVE BUTTON MONITOR</h2>
-  <div class="buttons" id="buttons"></div>
- </section>
-
+<section class="card" id="drift">
+ <h2>ANALOG STICKS <span>• DRIFT & LINEARITY</span></h2>
+ <div class="stickrow">
+  <div class="stickbox">
+   <div class="stick-title">LEFT STICK</div>
+   <div class="scope"><div class="point" id="p0"></div></div>
+   <div class="values"><span id="lx">X: +0.00</span><span id="ly">Y: +0.00</span></div>
+   <div class="bar"><i id="drift0"></i></div>
+  </div>
+  <div class="stickbox">
+   <div class="stick-title">RIGHT STICK</div>
+   <div class="scope"><div class="point" id="p1"></div></div>
+   <div class="values"><span id="rx">X: +0.00</span><span id="ry">Y: +0.00</span></div>
+   <div class="bar"><i id="drift1"></i></div>
+  </div>
+ </div>
  <br>
- <section class="panel">
-  <h2>ANALOG PRECISION MONITOR</h2>
-  <div class="axes">
-   <div><div class="axis"><div class="dot" id="dot0"></div></div><div class="axis-label">LEFT X / Y</div></div>
-   <div><div class="axis"><div class="dot" id="dot1"></div></div><div class="axis-label">RIGHT X / Y</div></div>
-   <div><div class="axis"><div class="dot" id="dot2"></div></div><div class="axis-label">AXIS 3</div></div>
-   <div><div class="axis"><div class="dot" id="dot3"></div></div><div class="axis-label">AXIS 4</div></div>
-  </div>
-  <p id="axisValues"><small>Waiting for input...</small></p>
- </section>
+ <small>Drift readings are based on the current stick position. Keep the sticks untouched to check their resting values.</small>
+</section>
 
- <br>
- <section class="panel">
-  <h2>TRIGGER MONITOR</h2>
-  <div class="data-grid">
-   <div class="metric"><b>L2 / LT</b><span id="l2">0.00</span><div class="track"><div class="fill" id="l2bar"></div></div></div>
-   <div class="metric"><b>R2 / RT</b><span id="r2">0.00</span><div class="track"><div class="fill" id="r2bar"></div></div></div>
-  </div>
-  <h2>SOFTWARE DEADZONE</h2>
-  <input id="deadzone" type="range" min="0" max=".5" step=".01" value=".05" style="width:100%">
-  <small>Deadzone: <span id="deadValue">0.05</span> — Display adjustment only; no firmware calibration.</small>
- </section>
+<section class="card">
+ <h2>TRIGGERS <span>• ANALOG PRESSURE</span></h2>
+ <div class="triggergrid">
+  <div class="trigger"><strong>LT / L2</strong><div class="big" id="lt">0.00</div><div class="bar"><i id="ltbar"></i></div></div>
+  <div class="trigger"><strong>RT / R2</strong><div class="big" id="rt">0.00</div><div class="bar"><i id="rtbar"></i></div></div>
+ </div>
+</section>
 
- <br>
- <section class="panel">
-  <h2>VIBRATION TEST</h2>
-  <button id="vibrate">TEST VIBRATION</button>
-  <button class="secondary" id="reset">RESET DISPLAY</button>
-  <p><small>Vibration availability depends on browser and controller support.</small></p>
- </section>
+<section class="card" id="raw">
+ <h2>RAW DATA <span>• GAMEPAD API OUTPUT</span></h2>
+ <div class="rawgrid">
+  <div><h2>AXES</h2><div class="rawlist" id="axes"></div></div>
+  <div><h2>BUTTONS</h2><div class="rawlist" id="rawbuttons"></div></div>
+ </div>
+</section>
+
+<section class="card" id="vibration">
+ <h2>VIBRATION <span>• DUAL MOTOR TEST</span></h2>
+ <div class="modes">
+  <button data-vib="heavy">HEAVY</button>
+  <button data-vib="light">LIGHT</button>
+  <button data-vib="burst">BURST</button>
+  <button data-vib="pulse">PULSE</button>
+ </div>
+ <br><small id="vibstatus">Connect a compatible controller to test vibration.</small>
+</section>
+
+<section class="card">
+ <h2>SOFTWARE <span>DEADZONE</span></h2>
+ <input id="deadzone" type="range" min="0" max=".5" step=".01" value=".05" style="width:100%">
+ <small>Deadzone: <span id="dzvalue">0.05</span> — affects displayed stick values only, not controller firmware.</small>
+</section>
 </main>
-<footer>i-FiX HYBRID CONTROLLER LAB · BUILT FOR TESTING</footer>
+<footer>i-FiX CONTROLLER TESTER • PS4 / PS5 / XBOX / GAMEPAD</footer>
 
 <script>
-const names=[
- "✕ / A","○ / B","□ / X","△ / Y","L1 / LB","R1 / RB",
- "L2 / LT","R2 / RT","SHARE","OPTIONS","L3","R3",
- "UP","DOWN","LEFT","RIGHT","PS / HOME","TOUCHPAD"
-];
-const box=document.getElementById("buttons");
-names.forEach((name,i)=>{
- const el=document.createElement("div");
- el.className="key";el.id="b"+i;el.textContent=name;
- box.appendChild(el);
+const names=["A / Cross","B / Circle","X / Square","Y / Triangle",
+"LB / L1","RB / R1","LT / L2","RT / R2",
+"Share","Options","L3","R3","D-Pad Up","D-Pad Down",
+"D-Pad Left","D-Pad Right","Home","Touchpad"];
+const rawB=document.getElementById("rawbuttons");
+const rawA=document.getElementById("axes");
+names.forEach((n,i)=>{
+ let e=document.createElement("div");e.className="rawitem";e.id="rb"+i;
+ e.innerHTML="<b>"+i+"</b>"+n;rawB.appendChild(e);
 });
-let selected=null,padNow=null;
-const dz=()=>Number(document.getElementById("deadzone").value);
+for(let i=0;i<8;i++){
+ let e=document.createElement("div");e.className="rawitem";e.id="ra"+i;
+ e.innerHTML="<b>AXIS "+i+"</b>+0.00";rawA.appendChild(e);
+}
+let chosen=null,current=null;
+const dead=()=>Number(document.getElementById("deadzone").value);
 document.getElementById("deadzone").oninput=e=>{
- document.getElementById("deadValue").textContent=Number(e.target.value).toFixed(2);
+ document.getElementById("dzvalue").textContent=Number(e.target.value).toFixed(2);
 };
-function axisValue(v){return Math.abs(v)<dz()?0:v;}
+function fmt(v){return (v>=0?"+":"")+v.toFixed(2)}
 function update(){
- const list=navigator.getGamepads?navigator.getGamepads():[];
- let p=selected!==null?list[selected]:null;
- if(!p)p=Array.from(list).find(x=>x&&x.connected);
+ let pads=navigator.getGamepads?navigator.getGamepads():[];
+ let p=chosen!==null?pads[chosen]:null;
+ if(!p)p=Array.from(pads).find(x=>x&&x.connected);
  if(p){
-  selected=p.index;padNow=p;
-  document.getElementById("connection").textContent="● CONNECTED";
-  document.getElementById("connection").style.color="#56e39b";
+  current=p;chosen=p.index;
+  document.getElementById("status").textContent="● CONTROLLER CONNECTED";
+  document.getElementById("status").style.color="#50d69a";
+  document.getElementById("connected").textContent="Connected";
   document.getElementById("device").textContent=p.id;
   document.getElementById("index").textContent=p.index;
-  document.getElementById("buttonCount").textContent=p.buttons.length;
-  document.getElementById("axisCount").textContent=p.axes.length;
-  document.getElementById("vibration").textContent=p.vibrationActuator?"SUPPORTED":"NOT DETECTED";
-  names.forEach((_,i)=>{
-   document.getElementById("b"+i).classList.toggle("active",!!p.buttons[i]?.pressed);
+  let pressed=[];
+  names.forEach((n,i)=>{
+   let b=p.buttons[i],el=document.getElementById("rb"+i);
+   el.classList.toggle("active",!!b?.pressed);
+   if(b?.pressed)pressed.push(n);
+   el.lastChild.textContent=n+" "+(b?.value??0).toFixed(2);
   });
-  let values=[];
-  for(let i=0;i<4;i++){
-   const x=axisValue(p.axes[i*2]??0);
-   const y=axisValue(p.axes[i*2+1]??0);
-   const dot=document.getElementById("dot"+i);
-   dot.style.left=`calc(${50+x*40}% - 9px)`;
-   dot.style.top=`calc(${50+y*40}% - 9px)`;
-   values.push(`Stick ${i+1}: X ${x.toFixed(2)} / Y ${y.toFixed(2)}`);
+  document.getElementById("pressedName").textContent=pressed.length?pressed.join(", "):"No Button Pressed";
+  for(let i=0;i<p.axes.length;i++){
+   let v=p.axes[i],el=document.getElementById("ra"+i);
+   el.innerHTML="<b>AXIS "+i+"</b>"+fmt(v);
   }
-  document.getElementById("axisValues").textContent=values.join(" | ");
-  const l=p.buttons[6]?.value??0,r=p.buttons[7]?.value??0;
-  document.getElementById("l2").textContent=l.toFixed(2);
-  document.getElementById("r2").textContent=r.toFixed(2);
-  document.getElementById("l2bar").style.width=(l*100)+"%";
-  document.getElementById("r2bar").style.width=(r*100)+"%";
+  let x=p.axes[0]??0,y=p.axes[1]??0;
+  let r=p.axes[2]??0,s=p.axes[3]??0;
+  const adjust=v=>Math.abs(v)<dead()?0:v;
+  x=adjust(x);y=adjust(y);r=adjust(r);s=adjust(s);
+  document.getElementById("p0").style.left=`calc(${50+x*45}% - 6px)`;
+  document.getElementById("p0").style.top=`calc(${50+y*45}% - 6px)`;
+  document.getElementById("p1").style.left=`calc(${50+r*45}% - 6px)`;
+  document.getElementById("p1").style.top=`calc(${50+s*45}% - 6px)`;
+  document.getElementById("lx").textContent="X: "+fmt(x);
+  document.getElementById("ly").textContent="Y: "+fmt(y);
+  document.getElementById("rx").textContent="X: "+fmt(r);
+  document.getElementById("ry").textContent="Y: "+fmt(s);
+  document.getElementById("drift0").style.width=Math.min(100,Math.hypot(x,y)*100)+"%";
+  document.getElementById("drift1").style.width=Math.min(100,Math.hypot(r,s)*100)+"%";
+  let l=p.buttons[6]?.value??0,t=p.buttons[7]?.value??0;
+  document.getElementById("lt").textContent=l.toFixed(2);
+  document.getElementById("rt").textContent=t.toFixed(2);
+  document.getElementById("ltbar").style.width=l*100+"%";
+  document.getElementById("rtbar").style.width=t*100+"%";
  }else{
-  padNow=null;
-  document.getElementById("connection").textContent="● WAITING FOR CONTROLLER";
-  document.getElementById("connection").style.color="#ff7777";
-  document.getElementById("device").textContent="Connect your controller and press any button";
+  current=null;
+  document.getElementById("status").textContent="● WAITING FOR CONTROLLER";
+  document.getElementById("status").style.color="#e9ad55";
+  document.getElementById("connected").textContent="Not Connected";
+  document.getElementById("device").textContent="Press any button on your controller";
   document.getElementById("index").textContent="--";
-  document.getElementById("buttonCount").textContent="--";
-  document.getElementById("axisCount").textContent="--";
-  document.getElementById("vibration").textContent="--";
-  names.forEach((_,i)=>document.getElementById("b"+i).classList.remove("active"));
-  for(let i=0;i<4;i++){
-   document.getElementById("dot"+i).style.left="calc(50% - 9px)";
-   document.getElementById("dot"+i).style.top="calc(50% - 9px)";
-  }
-  document.getElementById("l2").textContent="0.00";
-  document.getElementById("r2").textContent="0.00";
-  document.getElementById("l2bar").style.width="0%";
-  document.getElementById("r2bar").style.width="0%";
+  document.getElementById("pressedName").textContent="Waiting for Input";
+  names.forEach((n,i)=>document.getElementById("rb"+i).classList.remove("active"));
  }
  requestAnimationFrame(update);
 }
-window.addEventListener("gamepadconnected",e=>selected=e.gamepad.index);
-window.addEventListener("gamepaddisconnected",e=>{if(selected===e.gamepad.index)selected=null});
+window.addEventListener("gamepadconnected",e=>chosen=e.gamepad.index);
+window.addEventListener("gamepaddisconnected",e=>{if(chosen===e.gamepad.index)chosen=null});
 document.getElementById("connect").onclick=()=>{
- if(!navigator.getGamepads){alert("Gamepad API is not supported.");return;}
- alert("Press any button on your connected controller.");
+ alert("Connect your controller, then press any button.");
 };
-document.getElementById("vibrate").onclick=async()=>{
- const a=padNow?.vibrationActuator;
- if(!a){alert("Vibration is not supported.");return;}
- try{await a.playEffect("dual-rumble",{duration:500,strongMagnitude:1,weakMagnitude:1});}
- catch(e){alert("Vibration test unavailable.");}
-};
-document.getElementById("reset").onclick=()=>{
- selected=null;padNow=null;
-};
+document.querySelectorAll("[data-vib]").forEach(btn=>{
+ btn.onclick=async()=>{
+  if(!current?.vibrationActuator){
+   document.getElementById("vibstatus").textContent="Vibration not supported by this controller/browser.";
+   return;
+  }
+  const mode=btn.dataset.vib;
+  const settings={
+   heavy:{duration:700,strongMagnitude:1,weakMagnitude:1},
+   light:{duration:700,strongMagnitude:.25,weakMagnitude:.25},
+   burst:{duration:250,strongMagnitude:1,weakMagnitude:.7},
+   pulse:{duration:1200,strongMagnitude:.6,weakMagnitude:.2}
+  };
+  try{
+   await current.vibrationActuator.playEffect("dual-rumble",settings[mode]);
+   document.getElementById("vibstatus").textContent=mode.toUpperCase()+" vibration test sent.";
+  }catch(e){
+   document.getElementById("vibstatus").textContent="Vibration test unavailable.";
+  }
+ };
+});
 requestAnimationFrame(update);
 </script>
 </body>
